@@ -807,6 +807,10 @@ describe('webContents module', () => {
       expect(() => {
         w.webContents.setZoomFactor(0.0)
       }).to.throw(/'zoomFactor' must be a double greater than 0.0/)
+
+      expect(() => {
+        w.webContents.setZoomFactor(-2.0)
+      }).to.throw(/'zoomFactor' must be a double greater than 0.0/)
     })
 
     // TODO(codebytere): remove in Electron v8.0.0

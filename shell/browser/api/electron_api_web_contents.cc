@@ -4,6 +4,7 @@
 
 #include "shell/browser/api/electron_api_web_contents.h"
 
+#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -2491,7 +2492,7 @@ double WebContents::GetZoomLevel() const {
 
 void WebContents::SetZoomFactor(gin_helper::ErrorThrower thrower,
                                 double factor) {
-  if (factor <= 0.0) {
+  if (factor < std::numeric_limits<double>::epsilon()) {
     thrower.ThrowError("'zoomFactor' must be a double greater than 0.0");
     return;
   }
