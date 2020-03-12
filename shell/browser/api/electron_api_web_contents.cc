@@ -2491,7 +2491,7 @@ double WebContents::GetZoomLevel() const {
 
 void WebContents::SetZoomFactor(gin_helper::ErrorThrower thrower,
                                 double factor) {
-  if (factor == 0.0) {
+  if (factor <= 0.0) {
     thrower.ThrowError("'zoomFactor' must be a double greater than 0.0");
     return;
   }
