@@ -800,6 +800,15 @@ describe('webContents module', () => {
 
     afterEach(closeAllWindows)
 
+    it('throws on an invalid zoomFactor', async () => {
+      const w = new BrowserWindow({ show: false })
+      await w.loadURL('about:blank')
+
+      expect(() => {
+        w.webContents.setZoomFactor(0.0)
+      }).to.throw(/'zoomFactor' must be a double greater than 0.0/)
+    })
+
     // TODO(codebytere): remove in Electron v8.0.0
     it('can set the correct zoom level (functions)', async () => {
       const w = new BrowserWindow({ show: false })
