@@ -47,13 +47,13 @@
 // This view would inform Chromium to resize the hosted views::View.
 //
 // The overrided methods should behave the same with BridgedContentView.
-@interface ElectronAdapatedContentView : NSView {
+@interface ElectronAdaptedContentView : NSView {
  @private
   views::NativeWidgetMacNSWindowHost* bridge_host_;
 }
 @end
 
-@implementation ElectronAdapatedContentView
+@implementation ElectronAdaptedContentView
 
 - (id)initWithShell:(electron::NativeWindowMac*)shell {
   if ((self = [self init])) {
@@ -520,6 +520,9 @@ NativeWindowMac::~NativeWindowMac() {
 }
 
 void NativeWindowMac::RepositionTrafficLights() {
+  // Ensure maximizable options retain pre-existing state.
+  [[window_ standardWindowButton:NSWindowZoomButton] setEnabled:maximizable_];
+
   if (!traffic_light_position_.x() && !traffic_light_position_.y()) {
     return;
   }
@@ -930,11 +933,18 @@ bool NativeWindowMac::IsMinimizable() {
 }
 
 void NativeWindowMac::SetMaximizable(bool maximizable) {
+  if (maximizable != maximizable_)
+    maximizable_ = maximizable;
+
   [[window_ standardWindowButton:NSWindowZoomButton] setEnabled:maximizable];
 }
 
 bool NativeWindowMac::IsMaximizable() {
-  return [[window_ standardWindowButton:NSWindowZoomButton] isEnabled];
+  const bool maximizable =
+      [[window_ standardWindowButton:NSWindowZoomButton] isEnabled];
+  DCHECK(maximizable == maximizable_);
+
+  return maximizable;
 }
 
 void NativeWindowMac::SetFullScreenable(bool fullscreenable) {
@@ -1722,7 +1732,7 @@ void NativeWindowMac::OverrideNSWindowContentView() {
   // content view with a simple NSView.
   if (has_frame()) {
     container_view_.reset(
-        [[ElectronAdapatedContentView alloc] initWithShell:this]);
+        [[ElectronAdaptedContentView alloc] initWithShell:this]);
   } else {
     container_view_.reset([[FullSizeContentView alloc] init]);
     [container_view_ setFrame:[[[window_ contentView] superview] bounds]];
